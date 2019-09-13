@@ -108,6 +108,38 @@ def ewma_vectorized(data, alpha, offset=None, dtype=None, order='C', out=None):
     return out
 ######################
 
+# def ema():
+#     multiplier = 2 / (length + 1)
+#     ema = (target[source] * multiplier) + (previous['ema'] * (1 - multiplier))
+
+# # https://www.learndatasci.com/tutorials/python-finance-part-3-moving-average-trading-strategy/
+# # https://gist.github.com/jtwyles/45b364220f7f4c5a7cf030540a675459#file-dema-py-L45
+
+# # Calculates the SMA of an array of candles using the `source` price.
+# def calculate_sma(candles, source):
+#     length = len(candles)
+#     sum = reduce((lambda last, x: { source: last[source] + x[source] }), candles)
+#     sma = sum[source] / length
+#     return sma
+# # Calculates the EMA of an array of candles using the `source` price.
+# def calculate_ema(candles, source):
+#     length = len(candles)
+#     target = candles[0]
+#     previous = candles[1]
+
+#     # if there is no previous EMA calculated, then EMA=SMA
+#     if 'ema' not in previous or previous['ema'] == None:
+#         return calculate_sma(candles, source)
+
+#     else:
+#         # multiplier: (2 / (length + 1))
+#         # EMA: (close * multiplier) + ((1 - multiplier) * EMA(previous))
+#         multiplier = 2 / (length + 1)
+#         ema = (target[source] * multiplier) + (previous['ema'] * (1 - multiplier))
+
+#         return ema
+
+######################
 
 #### intc_data.csv ####
 # df = pd.read_csv('intc_data.csv', parse_dates=['Date'], index_col=['Date'])
@@ -123,6 +155,7 @@ df['ewm'] = df['Price'].ewm(span=window,min_periods=window-1,adjust=False,ignore
 df['native-ewm'] = pd.Series.ewm(df['Price'], span=window).mean()
 df['vectorV2-EMA'] = numpy_ewma_vectorized_v2(df['Price'], window)
 df['np-EMA'] = numpy_ewma(df['Price'], window)
+df['c-EMA'] = calculate_ema(df['Price'], window)
 
 print(df[['Price','10-day EMA','ewm','vectorV2-EMA','np-EMA','native-ewm']].head(30))
 
